@@ -9,6 +9,7 @@ public class PlayerController : MonoBehaviour
     [Header("Movement")]
     public float moveSpeed;
     public float jumpPower;
+    public float dashPower;
     private Vector2 curMovementInput;
     public LayerMask groundLayerMask;
 
@@ -99,6 +100,18 @@ public class PlayerController : MonoBehaviour
         {
             Jump(this.jumpPower);
             //_rigidbody.AddForce(Vector2.up * jumpPower, ForceMode.Impulse);
+        }
+    }
+
+    public void OnDash(InputAction.CallbackContext context)
+    {
+        if(context.phase == InputActionPhase.Performed && isGrounded())
+        {
+            moveSpeed *= dashPower;
+        }
+        if(context.phase == InputActionPhase.Canceled)
+        {
+            moveSpeed /= dashPower;
         }
     }
 
