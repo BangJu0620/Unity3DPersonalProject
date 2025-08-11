@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Condition : MonoBehaviour
 {
@@ -9,9 +10,20 @@ public class Condition : MonoBehaviour
     public float maxValue;
     public float passiveValue;
 
+    public Image uiBar;
+
     void Start()
     {
         curValue = startValue;
+    }
+    private void Update()
+    {
+        uiBar.fillAmount = GetPercentage();
+    }
+
+    public float GetPercentage()
+    {
+        return curValue / maxValue;
     }
 
     public void Add(float value)

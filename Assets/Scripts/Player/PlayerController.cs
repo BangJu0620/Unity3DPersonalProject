@@ -90,12 +90,8 @@ public class PlayerController : MonoBehaviour
     public void OnJump(InputAction.CallbackContext context)
     {
         // InputActionPhase.Started : 눌렀을 때
-        Debug.Log("점프 시도");
-        Debug.Log(context.phase == InputActionPhase.Started);
-        Debug.Log(isGrounded());
         if (context.phase == InputActionPhase.Started && isGrounded())
         {
-            Debug.Log("점프 동작");
             _rigidbody.AddForce(Vector2.up * jumpPower, ForceMode.Impulse);
         }
     }

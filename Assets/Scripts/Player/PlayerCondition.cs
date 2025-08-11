@@ -1,25 +1,56 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerCondition : BaseCondition, IDamageable
+public interface IDamageable
 {
-    //public UICondition uiCondition;
+    void TakePhysicalDamage(int damage);
+}
+
+public class PlayerCondition : MonoBehaviour, IDamageable
+{
+    public UICondition uiCondition;
+
+    public Condition health;
+    public Condition stamina;
+
+    public event Action onTakeDamage;
+
+    void Update()
+    {
+        stamina.Add(stamina.passiveValue * Time.deltaTime);
+
+        if (health.curValue <= 0f)
+        {
+            Die();
+        }
+    }
+
+    public void Heal(float amount)
+    {
+        health.Add(amount);
+    }
+
+    public void Die()
+    {
+        Debug.Log("죽었다!");
+    }
 
     public void TakePhysicalDamage(int damage)
     {
-        throw new System.NotImplementedException();
+        health.Subtract(damage);
+        onTakeDamage?.Invoke();
     }
 
-    // Start is called before the first frame update
-    void Start()
+    public bool UseStamina(float amount)    // 후에 생길 벽타기에 스태미나 달게 하기
     {
-        
-    }
+        if (stamina.curValue - amount < 0f)
+        {
+            return false;
+        }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        stamina.Subtract(amount);
+        return true;
     }
 }
