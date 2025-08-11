@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PlayerCondition : BaseCondition, IDamageable
 {
+    //public UICondition uiCondition;
+
     public void TakePhysicalDamage(int damage)
     {
         throw new System.NotImplementedException();
