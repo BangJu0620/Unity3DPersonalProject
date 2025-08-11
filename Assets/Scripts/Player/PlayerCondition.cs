@@ -19,7 +19,10 @@ public class PlayerCondition : MonoBehaviour, IDamageable
 
     void Update()
     {
-        stamina.Add(stamina.passiveValue * Time.deltaTime);
+        if (!PlayerManager.Instance.Player.controller.isDashing)
+        {
+            stamina.Add(stamina.passiveValue * Time.deltaTime);
+        }
 
         if (health.curValue <= 0f)
         {

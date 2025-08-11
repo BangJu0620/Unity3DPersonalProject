@@ -1609,7 +1609,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 5
   jumpPower: 80
+  jumpStamina: 10
   dashPower: 1.5
+  dashStamina: 2
   groundLayerMask:
     serializedVersion: 2
     m_Bits: 4294967295

@@ -9,7 +9,10 @@ public class PlayerController : MonoBehaviour
     [Header("Movement")]
     public float moveSpeed;
     public float jumpPower;
+    public float jumpStamina;
     public float dashPower;
+    public float dashStamina;
+    public bool isDashing = false;
     private Vector2 curMovementInput;
     public LayerMask groundLayerMask;
 
@@ -33,6 +36,14 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
+    }
+    private void Update()
+    {
+        if (isDashing)
+        {
+            Debug.Log("대쉬 스태미나 소모중");
+            PlayerManager.Instance.Player.condition.stamina.Subtract(dashStamina * Time.deltaTime);
+        }
     }
 
     private void FixedUpdate()
@@ -96,7 +107,7 @@ public class PlayerController : MonoBehaviour
     public void OnJump(InputAction.CallbackContext context)
     {
         // InputActionPhase.Started : 눌렀을 때
-        if (context.phase == InputActionPhase.Started && isGrounded())
+        if (context.phase == InputActionPhase.Started && isGrounded() && PlayerManager.Instance.Player.condition.UseStamina(jumpStamina))
         {
             Jump(this.jumpPower);
             //_rigidbody.AddForce(Vector2.up * jumpPower, ForceMode.Impulse);
@@ -105,13 +116,15 @@ public class PlayerController : MonoBehaviour
 
     public void OnDash(InputAction.CallbackContext context)
     {
-        if(context.phase == InputActionPhase.Performed && isGrounded())
+        if(context.phase == InputActionPhase.Performed && isGrounded() && !isDashing)
         {
             moveSpeed *= dashPower;
+            isDashing = true;
         }
-        if(context.phase == InputActionPhase.Canceled)
+        if(context.phase == InputActionPhase.Canceled && isDashing)
         {
             moveSpeed /= dashPower;
+            isDashing = false;
         }
     }
 
