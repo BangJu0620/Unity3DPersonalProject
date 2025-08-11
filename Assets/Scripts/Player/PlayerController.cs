@@ -68,6 +68,11 @@ public class PlayerController : MonoBehaviour
         _rigidbody.velocity = dir;
     }
 
+    public void Jump(float jumpPower)
+    {
+        _rigidbody.AddForce(Vector2.up * jumpPower, ForceMode.Impulse);
+    }
+
     public void OnMove(InputAction.CallbackContext context)
     {
         // InputActionPhase.Performed : 계속 누르고 있을 때
@@ -92,7 +97,8 @@ public class PlayerController : MonoBehaviour
         // InputActionPhase.Started : 눌렀을 때
         if (context.phase == InputActionPhase.Started && isGrounded())
         {
-            _rigidbody.AddForce(Vector2.up * jumpPower, ForceMode.Impulse);
+            Jump(this.jumpPower);
+            //_rigidbody.AddForce(Vector2.up * jumpPower, ForceMode.Impulse);
         }
     }
 

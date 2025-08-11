@@ -21,6 +21,7 @@ public class ItemDataConsumable
 {
     public ConsumableType type; // 어떤 걸 늘려주는지
     public float value;         // 얼마나 늘려주는지
+    public float duration;      // 지속시간
 }
 
 // ScriptableObject를 만들 때 빠르기 만들기 위해 메뉴창에다가 추가

@@ -10,7 +10,7 @@ public class Player : MonoBehaviour
     //public Equipment equip;
 
     public ItemData itemData;
-    public Action addItem;
+    //public Action addItem;
 
     //public Transform dropPosition;
 
