@@ -101,7 +101,7 @@ public class PlayerController : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (canLook && !isHanging)
+        if (canLook)
         {
             CameraLook();
         }
@@ -132,7 +132,7 @@ public class PlayerController : MonoBehaviour
     {
         Vector3 dir = transform.up * curMovementInput.y + transform.right * curMovementInput.x;
         dir *= climbSpeed;
-        //dir.y = _rigidbody.velocity.y;
+
         if (isXLocked)
         {
             dir.x = _rigidbody.velocity.x;
