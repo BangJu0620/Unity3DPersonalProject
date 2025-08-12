@@ -21,6 +21,7 @@ public class PlayerController : MonoBehaviour
     public float minXLook;
     public float maxXLook;
     private float camCurXRot;
+    public float camDistance;
     public float lookSensitivity;
     private Vector2 mouseDelta;
     public bool canLook = true;
@@ -36,12 +37,14 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
+        Vector3 camPos = cameraContainer.transform.position;
+        camPos.z -= camDistance;
+        cameraContainer.transform.position = camPos;
     }
     private void Update()
     {
         if (isDashing)
         {
-            Debug.Log("대쉬 스태미나 소모중");
             PlayerManager.Instance.Player.condition.stamina.Subtract(dashStamina * Time.deltaTime);
         }
     }
