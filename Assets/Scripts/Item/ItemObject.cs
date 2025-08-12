@@ -57,6 +57,12 @@ public class ItemObject : MonoBehaviour, IInteractable
                 case ConsumableType.JumpPower:
                     PlayerManager.Instance.Player.controller.jumpPower += data.consumables[i].value * num;
                     break;
+                case ConsumableType.DoubleJump:
+                    PlayerManager.Instance.Player.controller.isDoubleJump = isActive;
+                    break;
+                case ConsumableType.Invincibility:
+                    PlayerManager.Instance.Player.condition.isInvincibility = isActive;
+                    break;
             }
         }
     }

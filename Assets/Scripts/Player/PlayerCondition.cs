@@ -15,6 +15,8 @@ public class PlayerCondition : MonoBehaviour, IDamageable
     public Condition health;
     public Condition stamina;
 
+    public bool isInvincibility = false;
+
     public event Action onTakeDamage;
 
     void Update()
@@ -42,6 +44,10 @@ public class PlayerCondition : MonoBehaviour, IDamageable
 
     public void TakePhysicalDamage(int damage)
     {
+        if (isInvincibility)
+        {
+            return;
+        }
         health.Subtract(damage);
         onTakeDamage?.Invoke();
     }

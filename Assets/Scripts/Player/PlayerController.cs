@@ -8,20 +8,29 @@ public class PlayerController : MonoBehaviour
 {
     [Header("Movement")]
     public float moveSpeed;
+    private Vector2 curMovementInput;
+    // 점프
     public float jumpPower;
     public float jumpStamina;
+    // 달리기
     public float dashPower;
     public float dashStamina;
+    // 매달리기
     public float climbSpeed;
     public float hangStamina;
     public float climbStamina;
+    // bool값
     public bool isDashing = false;
     public bool isHanging = false;
     public bool isClimbing = false;
+    public bool isDoubleJump = false;   // 더블 점프 버프를 얻었는가
+    public bool canDoubleJump = false;  // 현재 더블 점프가 가능한 상태인가
+    // 이동 잠금(매달리기 때 사용)
     private bool isXLocked;
     private bool isZLocked;
-    private Vector2 curMovementInput;
+    // 땅에 있는지 확인할 땅 레이어
     public LayerMask groundLayerMask;
+    // 벽에 붙었는지 확인할 벽 정보
     public LayerMask wallLayerMask;
     public RaycastHit wall;
 
@@ -65,25 +74,18 @@ public class PlayerController : MonoBehaviour
         }
         if (isHanging)
         {
-            Debug.Log("Hanging");
             PlayerManager.Instance.Player.condition.DrainStamina(hangStamina);
             if (isClimbing)
             {
-                Debug.Log("Climbing");
                 PlayerManager.Instance.Player.condition.DrainStamina(climbStamina);
             }
         }
-
-        Debug.DrawRay(transform.position + (transform.up * 0.4f), Vector3.forward, Color.red, 0.3f);
-        Debug.DrawRay(transform.position + (transform.up * 0.8f), Vector3.forward, Color.red, 0.3f);
-        Debug.DrawRay(transform.position + (transform.up * 1.2f), Vector3.forward, Color.red, 0.3f);
     }
 
     private void FixedUpdate()
     {
         if (isHanging)
         {
-            Debug.Log("Climb");
             Climb();
             if (!isWall())
             {
@@ -93,7 +95,6 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            Debug.Log("Move");
             Move();
         }
     }
@@ -194,6 +195,14 @@ public class PlayerController : MonoBehaviour
                 Jump(this.jumpPower);
             }
         }
+        if (context.phase == InputActionPhase.Started && !isGrounded() && !isWall() && isDoubleJump && canDoubleJump)
+        {
+            if (PlayerManager.Instance.Player.condition.UseStamina(jumpStamina))
+            {
+                Jump(this.jumpPower);
+                canDoubleJump = false;
+            }
+        }
     }
 
     public void OnDash(InputAction.CallbackContext context)
@@ -230,6 +239,7 @@ public class PlayerController : MonoBehaviour
         {
             if (Physics.Raycast(rays[i], 0.3f, groundLayerMask))
             {
+                canDoubleJump = true;
                 return true;
             }
         }

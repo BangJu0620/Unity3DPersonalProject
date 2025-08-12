@@ -13,7 +13,9 @@ public enum ConsumableType  // 사용했을 때 뭘 늘려줄건지
 {
     Health,
     Speed,
-    JumpPower
+    JumpPower,
+    DoubleJump,
+    Invincibility
 }
 
 [Serializable]
