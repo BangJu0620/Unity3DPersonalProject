@@ -12,16 +12,29 @@ public class PlayerController : MonoBehaviour
     public float jumpStamina;
     public float dashPower;
     public float dashStamina;
+    public float climbSpeed;
+    public float hangStamina;
+    public float climbStamina;
     public bool isDashing = false;
+    public bool isHanging = false;
+    public bool isClimbing = false;
+    private bool isXLocked;
+    private bool isZLocked;
     private Vector2 curMovementInput;
     public LayerMask groundLayerMask;
+    public LayerMask wallLayerMask;
+    public RaycastHit wall;
 
     [Header("Look")]
     public Transform cameraContainer;
+    public Transform camera;
     public float minXLook;
     public float maxXLook;
     private float camCurXRot;
     public float camDistance;
+    private float camDistanceX = 0.35f;
+    private float camDistanceY = 0.25f;
+    private float baseLookSensitivity;
     public float lookSensitivity;
     private Vector2 mouseDelta;
     public bool canLook = true;
@@ -36,27 +49,58 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
+        baseLookSensitivity = lookSensitivity;
         Cursor.lockState = CursorLockMode.Locked;
-        Vector3 camPos = cameraContainer.transform.position;
+        Vector3 camPos = camera.transform.position;
+        camPos.x += camDistanceX * camDistance;
+        camPos.y += camDistanceY * camDistance;
         camPos.z -= camDistance;
-        cameraContainer.transform.position = camPos;
+        camera.transform.position = camPos;
     }
     private void Update()
     {
         if (isDashing)
         {
-            PlayerManager.Instance.Player.condition.stamina.Subtract(dashStamina * Time.deltaTime);
+            PlayerManager.Instance.Player.condition.DrainStamina(dashStamina);
         }
+        if (isHanging)
+        {
+            Debug.Log("Hanging");
+            PlayerManager.Instance.Player.condition.DrainStamina(hangStamina);
+            if (isClimbing)
+            {
+                Debug.Log("Climbing");
+                PlayerManager.Instance.Player.condition.DrainStamina(climbStamina);
+            }
+        }
+
+        Debug.DrawRay(transform.position + (transform.up * 0.4f), Vector3.forward, Color.red, 0.3f);
+        Debug.DrawRay(transform.position + (transform.up * 0.8f), Vector3.forward, Color.red, 0.3f);
+        Debug.DrawRay(transform.position + (transform.up * 1.2f), Vector3.forward, Color.red, 0.3f);
     }
 
     private void FixedUpdate()
     {
-        Move();
+        if (isHanging)
+        {
+            Debug.Log("Climb");
+            Climb();
+            if (!isWall())
+            {
+                // 매달리기 종료
+                HangExit();
+            }
+        }
+        else
+        {
+            Debug.Log("Move");
+            Move();
+        }
     }
 
     private void LateUpdate()
     {
-        if (canLook)
+        if (canLook && !isHanging)
         {
             CameraLook();
         }
@@ -83,6 +127,34 @@ public class PlayerController : MonoBehaviour
         _rigidbody.velocity = dir;
     }
 
+    void Climb()
+    {
+        Vector3 dir = transform.up * curMovementInput.y + transform.right * curMovementInput.x;
+        dir *= climbSpeed;
+        //dir.y = _rigidbody.velocity.y;
+        if (isXLocked)
+        {
+            dir.x = _rigidbody.velocity.x;
+        }
+        if (isZLocked)
+        {
+            dir.z = _rigidbody.velocity.z;
+        }
+
+        _rigidbody.velocity = dir;
+    }
+
+    void HangExit()
+    {
+        isHanging = false;
+        isClimbing = false;
+
+        // 떨어지는거 멈추기
+        _rigidbody.useGravity = !isHanging;
+        // 플레이어 방향 고정
+        LockPlayerRotation(isHanging);
+    }
+
     public void Jump(float jumpPower)
     {
         _rigidbody.AddForce(Vector2.up * jumpPower, ForceMode.Impulse);
@@ -94,10 +166,15 @@ public class PlayerController : MonoBehaviour
         if (context.phase == InputActionPhase.Performed)
         {
             curMovementInput = context.ReadValue<Vector2>();
+            if (isHanging)
+            {
+                isClimbing = true;
+            }
         }
         else if (context.phase == InputActionPhase.Canceled)
         {
             curMovementInput = Vector2.zero;
+            isClimbing = false;
         }
     }
 
@@ -110,21 +187,23 @@ public class PlayerController : MonoBehaviour
     public void OnJump(InputAction.CallbackContext context)
     {
         // InputActionPhase.Started : 눌렀을 때
-        if (context.phase == InputActionPhase.Started && isGrounded() && PlayerManager.Instance.Player.condition.UseStamina(jumpStamina))
+        if (context.phase == InputActionPhase.Started && isGrounded() && !isWall())
         {
-            Jump(this.jumpPower);
-            //_rigidbody.AddForce(Vector2.up * jumpPower, ForceMode.Impulse);
+            if (PlayerManager.Instance.Player.condition.UseStamina(jumpStamina))
+            {
+                Jump(this.jumpPower);
+            }
         }
     }
 
     public void OnDash(InputAction.CallbackContext context)
     {
-        if(context.phase == InputActionPhase.Performed && isGrounded() && !isDashing)
+        if(context.phase == InputActionPhase.Started && isGrounded() && PlayerManager.Instance.Player.condition.DrainStamina(dashStamina))
         {
             moveSpeed *= dashPower;
-            isDashing = true;
+            isDashing = !isDashing;
         }
-        if(context.phase == InputActionPhase.Canceled && isDashing)
+        if ((context.phase == InputActionPhase.Canceled && isDashing) || !PlayerManager.Instance.Player.condition.DrainStamina(dashStamina))
         {
             moveSpeed /= dashPower;
             isDashing = false;
@@ -145,11 +224,69 @@ public class PlayerController : MonoBehaviour
             new Ray(transform.position + (transform.right * 0.2f) + (transform.up * 0.3f), Vector3.down),
             new Ray(transform.position + (-transform.right * 0.2f) + (transform.up * 0.3f), Vector3.down)
         };
-
+        
         // ray 4개를 다 쏴서 하나라도 부딪히면 true 반환
         for (int i = 0; i < rays.Length; i++)
         {
             if (Physics.Raycast(rays[i], 0.3f, groundLayerMask))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public void OnHanging(InputAction.CallbackContext context)
+    {
+        if(context.phase == InputActionPhase.Started && isWall())
+        {
+            // 매달리기, 해제 온 오프식
+            isHanging = !isHanging;
+            // 떨어지는거 멈추기
+            _rigidbody.useGravity = !isHanging;
+            // 플레이어 방향 고정
+            LockPlayerRotation(isHanging);
+        }
+    }
+
+    void LockPlayerRotation(bool isActive)
+    {
+        int num = 0;
+        if (isActive) num = 0;
+        else num = 1;
+        //Quaternion playerRot = transform.rotation;
+        //playerRot.y = Vector3.Dot(wall.normal, Vector3.forward);
+        //transform.rotation = playerRot;
+        Debug.Log(Vector3.Dot(wall.normal, Vector3.forward));
+        if(Mathf.Abs(Vector3.Dot(wall.normal, Vector3.forward)) > 0.7f)
+        {
+            // z 위치 고정
+            isZLocked = isActive;
+        }
+        else
+        {
+            // x 위치 고정
+            isXLocked = isActive;
+        }
+        //lookSensitivity = baseLookSensitivity * num;
+    }
+
+    bool isWall()
+    {
+        // 앞으로 레이를 쏴서 벽이 있는지 확인
+        // 플레이어 감지를 피하기 위해 레이어마스크 설정
+        Ray[] rays = new Ray[3]
+        {
+            new Ray(transform.position + (transform.up * 0.4f), transform.forward),
+            new Ray(transform.position + (transform.up * 0.8f), transform.forward),
+            new Ray(transform.position + (transform.up * 1.2f), transform.forward),
+        };
+
+        // ray 3개를 다 쏴서 하나라도 부딪히면 true 반환
+        for (int i = 0; i < rays.Length; i++)
+        {
+            if (Physics.Raycast(rays[i], out wall, 0.3f, wallLayerMask))
             {
                 return true;
             }

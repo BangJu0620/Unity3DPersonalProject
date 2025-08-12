@@ -56,4 +56,15 @@ public class PlayerCondition : MonoBehaviour, IDamageable
         stamina.Subtract(amount);
         return true;
     }
+
+    public bool DrainStamina(float amount)
+    {
+        if(stamina.curValue - amount * Time.deltaTime < 0f)
+        {
+            return false;
+        }
+
+        stamina.Subtract(amount * Time.deltaTime);
+        return true;
+    }
 }
