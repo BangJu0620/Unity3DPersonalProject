@@ -51,7 +51,7 @@ public class PlayerCondition : MonoBehaviour, IDamageable
     // 무적 테스트용
     //void Damage()   
     //{
-    //    TakePhysicalDamage(20);
+    //    TakePhysicalDamage(10);
     //}
 
     public void TakePhysicalDamage(int damage)
