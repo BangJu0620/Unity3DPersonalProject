@@ -19,6 +19,12 @@ public class PlayerCondition : MonoBehaviour, IDamageable
 
     public event Action onTakeDamage;
 
+    // 무적 테스트용
+    //private void Start()
+    //{
+    //    InvokeRepeating("Damage", 0, 1);
+    //}
+
     void Update()
     {
         if (!PlayerManager.Instance.Player.controller.isDashing)
@@ -41,6 +47,12 @@ public class PlayerCondition : MonoBehaviour, IDamageable
     {
         Debug.Log("죽었다!");
     }
+
+    // 무적 테스트용
+    //void Damage()   
+    //{
+    //    TakePhysicalDamage(20);
+    //}
 
     public void TakePhysicalDamage(int damage)
     {
