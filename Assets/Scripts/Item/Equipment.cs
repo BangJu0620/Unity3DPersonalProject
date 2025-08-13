@@ -4,6 +4,12 @@ using UnityEngine;
 
 public class Equipment : MonoBehaviour
 {
+
+    private void Awake()
+    {
+        PlayerManager.Instance.Player.equip = this;
+    }
+
     public void UnEquip()
     {
         Destroy(gameObject);
