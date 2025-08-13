@@ -205,6 +205,12 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    void Dash()
+    {
+        moveSpeed *= dashPower;
+        isDashing = !isDashing;
+    }
+
     public void OnDash(InputAction.CallbackContext context)
     {
         if(context.phase == InputActionPhase.Started && isGrounded() && PlayerManager.Instance.Player.condition.DrainStamina(dashStamina))

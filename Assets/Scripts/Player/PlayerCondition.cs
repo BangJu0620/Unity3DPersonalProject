@@ -18,6 +18,7 @@ public class PlayerCondition : MonoBehaviour, IDamageable
     public bool isInvincibility = false;
 
     public event Action onTakeDamage;
+    public event Action onDrainStamina; // 지속적으로 사용하는 스태미나
 
     // 무적 테스트용
     //private void Start()
@@ -31,6 +32,8 @@ public class PlayerCondition : MonoBehaviour, IDamageable
         {
             stamina.Add(stamina.passiveValue * Time.deltaTime);
         }
+
+        //onDrainStamina?.Invoke();
 
         if (health.curValue <= 0f)
         {
