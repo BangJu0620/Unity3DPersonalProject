@@ -9,7 +9,7 @@ public enum ItemType
     Consumable, // 소비가능
 }
 
-public enum ConsumableType  // 사용했을 때 뭘 늘려줄건지
+public enum EffectType  // 사용했을 때 뭘 늘려줄건지
 {
     Health,
     Speed,
@@ -19,9 +19,9 @@ public enum ConsumableType  // 사용했을 때 뭘 늘려줄건지
 }
 
 [Serializable]
-public class ItemDataConsumable
+public class ItemDataEffect
 {
-    public ConsumableType type; // 어떤 걸 늘려주는지
+    public EffectType type; // 어떤 걸 늘려주는지
     public float value;         // 얼마나 늘려주는지
 }
 
@@ -37,9 +37,10 @@ public class ItemData : ScriptableObject
     public GameObject dropPrefab;
 
     [Header("Consumable")]
-    public ItemDataConsumable[] consumables;
+    public ItemDataEffect[] consumables;
     public float duration;      // 지속시간
 
     [Header("Equip")]
     public GameObject equipPrefab;
+    public ItemDataEffect[] equipables;
 }

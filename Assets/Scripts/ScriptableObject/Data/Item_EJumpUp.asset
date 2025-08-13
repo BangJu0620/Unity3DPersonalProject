@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9375f5ed587c05a44b1c1a835d68a6ac, type: 3}
+  m_Name: Item_EJumpUp
+  m_EditorClassIdentifier: 
+  displayName: "\uC810\uD504\uB825 \uC99D\uAC00 \uC7A5\uBE44"
+  description: "\uC7A5\uCC29\uD558\uBA74 \uC810\uD504\uB825\uC774 \uC99D\uAC00\uD558\uB294
+    \uC7A5\uBE44\uC785\uB2C8\uB2E4."
+  type: 0
+  icon: {fileID: 0}
+  dropPrefab: {fileID: 8999146568929987376, guid: 1c8169a6c74f4f94fbd74932f191d15c, type: 3}
+  consumables: []
+  duration: 0
+  equipPrefab: {fileID: 6464357943401134794, guid: 99f0fc84944190a458080a751e675391, type: 3}
+  equipables:
+  - type: 2
+    value: 40

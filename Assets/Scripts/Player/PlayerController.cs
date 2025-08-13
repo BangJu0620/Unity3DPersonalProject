@@ -268,9 +268,9 @@ public class PlayerController : MonoBehaviour
 
     void LockPlayerRotation(bool isActive)
     {
-        int num = 0;
-        if (isActive) num = 0;
-        else num = 1;
+        //int num = 0;
+        //if (isActive) num = 0;
+        //else num = 1;
         //Quaternion playerRot = transform.rotation;
         //playerRot.y = Vector3.Dot(wall.normal, Vector3.forward);
         //transform.rotation = playerRot;

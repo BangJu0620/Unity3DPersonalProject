@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IDamageable
+public interface IDamageable    // 추후에 데미지를 입는 NPC나 몬스터에 상속해주면 될듯
 {
     void TakePhysicalDamage(int damage);
 }
@@ -18,7 +18,7 @@ public class PlayerCondition : MonoBehaviour, IDamageable
     public bool isInvincibility = false;
 
     public event Action onTakeDamage;
-    public event Action onDrainStamina; // 지속적으로 사용하는 스태미나
+    //public event Action onDrainStamina; // 지속적으로 사용하는 스태미나
 
     // 무적 테스트용
     //private void Start()
